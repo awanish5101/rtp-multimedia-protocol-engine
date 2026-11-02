@@ -1,0 +1,36 @@
+name: C++ CI / Build & Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Dependencies (Ubuntu)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang make g++
+
+    - name: Build and Run Tests
+      run: |
+        make clean
+        make test
+
+    - name: Run Benchmarks
+      run: |
+        make benchmark
+
+    - name: Run RTP Protocol Engine
+      run: |
+        make run
